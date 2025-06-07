@@ -1,0 +1,33 @@
+{
+  "chart": {
+    "title": "Respiratory death rate from seasonal influenza, age 65+",
+    "subtitle": "Estimated annual number of deaths per 100,000 people in the age group. This focuses on respiratory flu deaths. It does not include deaths from other complications of the flu, such as cardiovascular disease.",
+    "note": "This shows an average between 2002 and 2011, excluding the 2009 Swine flu pandemic season.",
+    "citation": "Global Pandemic Mortality Project II (2019)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/annual-mortality-rate-from-seasonal-influenza-ages-65?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "South-East Asia",
+      "World",
+      "Western Pacific",
+      "Eastern Mediterranean",
+      "Africa",
+      "Europe",
+      "Americas"
+    ]
+  },
+  "columns": {
+    "rate over65": {
+      "titleShort": "Annual mortality rate (ages 65+)",
+      "titleLong": "Annual mortality rate (ages 65+)",
+      "unit": "",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 525771,
+      "citationShort": " – processed by Our World in Data",
+      "citationLong": " – processed by Our World in Data. “Annual mortality rate (ages 65+)” [dataset]. GLaMOR (2019) [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/525771.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-06-04",
+  "activeFilters": {}
+}
