@@ -54,6 +54,16 @@ tidy_tables <- lapply(tables, tidy_table)
 
 # join tables----
 
-final_table <- reduce(tidy_tables, left_join, by = c("Code", "Year"))
+final_table <- reduce(tidy_tables, left_join, by = c("Code", "Year")) 
 
-# save jioned table----
+# handle doubled variables and rename variables if needed
+final_table_avg <- final_table %>% 
+  select(-matches("Entity\\.y"), -matches("Entity\\.x.x"), -Low, -High) %>% 
+  group_by(Entity.x, Code) %>% 
+  summarize(across(everything(), ~mean(.x, na.rm = TRUE))) %>% 
+  select(-Year) %>% 
+  ungroup()
+
+# save joined table----
+
+write.csv(final_table_avg, "data/processed/final_table_avg.csv", row.names = FALSE)
