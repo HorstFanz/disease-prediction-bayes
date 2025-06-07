@@ -67,3 +67,6 @@ final_table_avg <- final_table %>%
 # save joined table----
 
 write.csv(final_table_avg, "data/processed/final_table_avg.csv", row.names = FALSE)
+
+# build table for COVID year 2021
+

@@ -45,13 +45,13 @@ r_urban_pop_share <- read.csv("data/raw/urban-population-share-2050/urban-popula
 # different table structures -> clean every table individually
 # directive: keep only relevant countries (maybe 30), only relevant years (from 1990)
 
-length(gdp_per_capita$Entity) # large table but format is acceptable. we don't know what we need exactly just yet. 
+length(r_gdp_per_capita$Entity) # large table but format is acceptable. we don't know what we need exactly just yet. 
 
-str(health_care_expenditure) # format acceptable
+str(r_health_care_expenditure) # format acceptable
 
-str(influenza_death_rate) # format acceptable
+str(r_influenza_death_rate) # format acceptable
 
-str(malaria_est_incidence) # weird format need cleening. since all successive tables come from our world in data -> write function
+str(r_malaria_est_incidence) # weird format need cleening. since all successive tables come from our world in data -> write function
 
 # create function for speed
 
@@ -65,11 +65,11 @@ clean_table <- function (df){
   return(df)
 }
 
-malaria_est_incidence <- clean_table(malaria_est_incidence) # looks good
+r_malaria_est_incidence <- clean_table(r_malaria_est_incidence) # looks good
 
 # write for loop to not have to retype the last line
 
-ourwid_table_names <- c("malaria_est_mortality", "malaria_total_cases")
+ourwid_table_names <- c("r_malaria_est_mortality", "r_malaria_total_cases")
 
 for (name in ourwid_table_names){
   df <- get(name)
@@ -79,20 +79,20 @@ for (name in ourwid_table_names){
 
 remove(df, cleaned) # remove unnecessary tables
 
-head(malaria_est_mortality, 1) # looks solid
+head(r_malaria_est_mortality, 1) # looks solid
 
 # clean rest of tables to similar format
 
-str(number_deaths_malaria,1) # format acceptable
+str(r_number_deaths_malaria,1) # format acceptable
 
-pop_density <- pop_density %>% 
+r_pop_density <- r_pop_density %>% 
   filter(between(Year, 1950, 2025)) # we dont need ancient past or future values
 
-str(tuberculosis_death_rate) # format acceptable
+str(r_tuberculosis_death_rate) # format acceptable
 
-str(tuberculosis_deaths) # format acceptable
+str(r_tuberculosis_deaths) # format acceptable
 
-urban_pop_share <- urban_pop_share %>% 
+r_urban_pop_share <- r_urban_pop_share %>% 
   filter(between(Year, 1950, 2025)) # same as pop_density
 
 # check missing values----
@@ -104,7 +104,7 @@ r_tables <- list(r_gdp_per_capita, r_health_care_expenditure,
                  r_tuberculosis_death_rate, r_tuberculosis_deaths, 
                  r_urban_pop_share)
 
-for (table in tables){ 
+for (table in r_tables){ 
   if (any(is.na(table))){
     print("has Na")
     } else {
@@ -115,7 +115,7 @@ for (table in tables){
 
 # save processed tables----
 
-names(tables) <- c("gdp_per_capita", "health_care_expenditure", 
+names(r_tables) <- c("gdp_per_capita", "health_care_expenditure", 
                    "influenza_death_rate", "malaria_est_incidence", 
                    "malaria_est_mortality", "malaria_total_cases", 
                    "number_deaths_malaria", "pop_density", 
@@ -130,7 +130,7 @@ save_table <- function (df, name){
 
 # loop into desired directory
 
-for (name in names(tables)){
-  save_table(tables[[name]], name)
+for (name in names(r_tables)){
+  save_table(r_tables[[name]], name)
 }
 
