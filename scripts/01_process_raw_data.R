@@ -4,58 +4,133 @@
 
 library(readr)
 
-malaria_total_cases <- read.csv("data/raw/malaria-cases-deaths/data/MALARIA_TOTAL_CASES.csv")
-malaria_est_incidence <- read.csv("data/raw/malaria-cases-deaths/data/MALARIA_EST_INCIDENCE.csv")
-malaria_est_mortality <- read.csv("data/raw/malaria-cases-deaths/data/MALARIA_EST_MORTALITY.csv")
+r_malaria_total_cases <- read.csv("data/raw/malaria-cases-deaths/data/MALARIA_TOTAL_CASES.csv")
+r_malaria_est_incidence <- read.csv("data/raw/malaria-cases-deaths/data/MALARIA_EST_INCIDENCE.csv")
+r_malaria_est_mortality <- read.csv("data/raw/malaria-cases-deaths/data/MALARIA_EST_MORTALITY.csv")
 
 # number of deaths from malaria
 
-number_deaths_malaria <- read.csv2("data/raw/number-of-deaths-from-malaria-who/number-of-deaths-from-malaria-who.csv")
+r_number_deaths_malaria <- read.csv("data/raw/number-of-deaths-from-malaria-who/number-of-deaths-from-malaria-who.csv")
 
 # gdp per capita
 
-gdp_per_capita <- read_csv("data/raw/gdp-per-capita-worldbank/gdp-per-capita-worldbank.csv")
+r_gdp_per_capita <- read_csv("data/raw/gdp-per-capita-worldbank/gdp-per-capita-worldbank.csv")
 
 # health care expenditure
 
-health_care_expenditure <- read.csv("data/raw/annual-healthcare-expenditure-per-capita/annual-healthcare-expenditure-per-capita.csv")
+r_health_care_expenditure <- read.csv("data/raw/annual-healthcare-expenditure-per-capita/annual-healthcare-expenditure-per-capita.csv")
 
 # pop density 
 
-pop_density <- read.csv("data/raw/population-density/population-density.csv")
+r_pop_density <- read.csv("data/raw/population-density/population-density.csv")
 
 # death rate influenza
 
-influenza_death_rate <- read.csv("data/raw/annual-mortality-rate-from-seasonal-influenza-ages-65/annual-mortality-rate-from-seasonal-influenza-ages-65.csv")
+r_influenza_death_rate <- read.csv("data/raw/annual-mortality-rate-from-seasonal-influenza-ages-65/annual-mortality-rate-from-seasonal-influenza-ages-65.csv")
 
 # tuberculosis_deaths
 
-tuberculosis_deaths <- read.csv("data/raw/tuberculosis-deaths-who/tuberculosis-deaths-who.csv")
+r_tuberculosis_deaths <- read.csv("data/raw/tuberculosis-deaths-who/tuberculosis-deaths-who.csv")
 
 # tuberculosis death rate
 
-tuberculosis_death_rate <- read.csv("data/raw/tuberculosis-death-rate/tuberculosis-death-rate.csv")
+r_tuberculosis_death_rate <- read.csv("data/raw/tuberculosis-death-rate/tuberculosis-death-rate.csv")
 
 # urbanization
 
-ubran_pop_share <- read.csv("data/raw/urban-population-share-2050/urban-population-share-2050.csv")
-
-
-
-# look at data----
-
-head(gdp_per_capita) # looks nice and understandable ready to clean
-str(gdp_per_capita)
-head(health_care_expenditure) # looks good year 
-str(health_care_expenditure) # two years included maybe need more COVID period
-
-head(malaria_est_incidence) # weird table structure
-head(malaria_est_mortality) # where is the the actual number looks like confidence interval
-head(malaria_est_incidence) # country names not included only three letter abbreviations
-
-head(pop_density)
-length(unique(pop_density$time))
+r_urban_pop_share <- read.csv("data/raw/urban-population-share-2050/urban-population-share-2050.csv")
 
 # delete unnecessary rows and columns----
 
-# handle missing values----
+# different table structures -> clean every table individually
+# directive: keep only relevant countries (maybe 30), only relevant years (from 1990)
+
+length(gdp_per_capita$Entity) # large table but format is acceptable. we don't know what we need exactly just yet. 
+
+str(health_care_expenditure) # format acceptable
+
+str(influenza_death_rate) # format acceptable
+
+str(malaria_est_incidence) # weird format need cleening. since all successive tables come from our world in data -> write function
+
+# create function for speed
+
+clean_table <- function (df){
+  df <- df %>% 
+    select(Code = SpatialDimensionValueCode, # rename for better joining
+           Year = TimeDim, 
+           Estimate = NumericValue,
+           Low,
+           High)
+  return(df)
+}
+
+malaria_est_incidence <- clean_table(malaria_est_incidence) # looks good
+
+# write for loop to not have to retype the last line
+
+ourwid_table_names <- c("malaria_est_mortality", "malaria_total_cases")
+
+for (name in ourwid_table_names){
+  df <- get(name)
+  cleaned <- clean_table(df)
+  assign(name, cleaned)
+} 
+
+remove(df, cleaned) # remove unnecessary tables
+
+head(malaria_est_mortality, 1) # looks solid
+
+# clean rest of tables to similar format
+
+str(number_deaths_malaria,1) # format acceptable
+
+pop_density <- pop_density %>% 
+  filter(between(Year, 1950, 2025)) # we dont need ancient past or future values
+
+str(tuberculosis_death_rate) # format acceptable
+
+str(tuberculosis_deaths) # format acceptable
+
+urban_pop_share <- urban_pop_share %>% 
+  filter(between(Year, 1950, 2025)) # same as pop_density
+
+# check missing values----
+
+r_tables <- list(r_gdp_per_capita, r_health_care_expenditure,
+                 r_influenza_death_rate, r_malaria_est_incidence, 
+                 r_malaria_est_mortality, r_malaria_total_cases, 
+                 r_number_deaths_malaria, r_pop_density, 
+                 r_tuberculosis_death_rate, r_tuberculosis_deaths, 
+                 r_urban_pop_share)
+
+for (table in tables){ 
+  if (any(is.na(table))){
+    print("has Na")
+    } else {
+      print("no NA")
+    }
+} # there are some NAs -> Keep NAs in individual tables for now to not lose data early.
+  # After joining, filter out or impute NAs in the final combined table before modeling.
+
+# save processed tables----
+
+names(tables) <- c("gdp_per_capita", "health_care_expenditure", 
+                   "influenza_death_rate", "malaria_est_incidence", 
+                   "malaria_est_mortality", "malaria_total_cases", 
+                   "number_deaths_malaria", "pop_density", 
+                   "tuberculosis_death_rate", "tuberculosis_deaths", 
+
+                                      "urban_pop_share") # assign names to tables
+# write function
+
+save_table <- function (df, name){
+  write.csv(df, paste0("data/processed/", name, ".csv"), row.names = FALSE)
+}
+
+# loop into desired directory
+
+for (name in names(tables)){
+  save_table(tables[[name]], name)
+}
+
