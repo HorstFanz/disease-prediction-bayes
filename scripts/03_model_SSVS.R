@@ -31,7 +31,7 @@ X <- cbind(1,                                   # intercept
 colnames(X) <- c("Intercept","GDP","Health","Pop65","MalariaInc",
                  "Density","TB_Mort","TB_Deaths","Urban")
 
-## ---- check for multicoliniarity of the predictors ----
+## ---- check for multicolliniarity of the predictors ----
 
 cor_matrix <- cor(X[,-1])  # Exclude the intercept
 print(round(cor_matrix, 2))  # Rounded for readability
@@ -52,3 +52,18 @@ vif(lm_model) # nothing over 5 looks good
 N <- nrow(X)            # number of countries
 K <- ncol(X)            # number of predictors
 
+# section can stay the same because we use same object names 
+A.OLS <- solve(crossprod(X))%*%crossprod(X,Y) # solve creates inverse so we have here (X'X)^-1 (X'Y) = \hat{\beta}. result is Matrix of OLS regression coefficients
+SSE <- crossprod(Y-X%*%A.OLS) # analogous (Y-X\beta)'(Y-X\beta)
+SIG.OLS <- SSE/(N-K) # estimate of error variance, N number observations,K number predictors
+
+#In the next step, create storage matrices for Gibbs loop and initialize prior
+gamma <- matrix(1,K,1) #indicators, start with full model
+# we want to start with all predictors included. so we create a Kx1 Matrix filled with 1
+sigma2.draw <- as.numeric(SIG.OLS) # converts to numeric if it wasn't already
+V.prior <- diag(as.numeric(gamma*tau1+(1-gamma)*tau0)) # picks either tau1 or tau0 as prior variance for the variable
+
+
+ALPHA.store <- matrix(NA,nsave,K) # creates matrix with NA entries, nsave rows, K columns
+SIGMA.store <- matrix(NA,nsave,1) # creates matrix with NA entries, nsave rows, 1 columns
+Gamma.store <- matrix(NA,nsave,K) # creates matrix with NA entries, nsave rows, K columns
