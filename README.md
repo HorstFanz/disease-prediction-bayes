@@ -1,57 +1,86 @@
 # disease-prediction-bayes
 
-This Document is a nice documentation for the project and can be used for the final presentation. 
+This Document is a summary of the project and can be used for the final presentation. 
 
----
+## What we wanted to do (Project Overview)
 
-## 01 What we wanted to do (Project Overview)
+- Model the frequency or mortality rate of diseases such as malaria or tuberculosis among 
+- Use cross sectional analysis for comparing countries with comparable disease (Malaria) incidence
+- Using a Bayesian linear regression framework 
+- Understand and predict disease (Malaira) outcomes based on socio-economic, demographic and medical factors
 
-This project aims to model the frequency or mortality rate of diseases such as malaria or tuberculosis among countries with low GDP per capita. Using a Bayesian linear regression framework, we seek to understand and predict disease outcomes based on socio-economic and demographic factors.
+## Research Question(s)
 
-### Research Question
+- Can we build a predictive model that estimates disease frequency or mortality rate for a given country?
+- How good is our model?
+- How well can we predict the response variable for the countries in our data set?
 
-Can we build a predictive model that estimates disease frequency or mortality for a given country based on data from other countries in the dataset?
+## Data Sources
 
-### Model
+- Data was used from Our World in Data, Human Development Index (HDI), and World Bank datasets (unitl now HDI data wasn't used)
+- For detailed information on the used data, see the [`README.md file`](/data/README.md) in the Data directory.
 
-We use a Bayesian linear regression model of the form:
+## Remarks on data
+
+- Variable Population share over 65, the estimate is no mean but rather the exact estimation for 2011
+- No time series for this predictor available
+- Malaria total cases, there was only an estimate provided (from years 2015-2019 rest was NAs) 
+- No lower or higher bound. Hence, we also droped these variables 
+- Only used Estimate for Malaria variables, not lower and upper bounds
+- Some of the variables contained missing data for several years
+- Handled this by setting time period of interest very recent
+- Only one NA remained and was resolved by interpolating the mean of 2009-2019 
+
+## Data manipulation
+
+- We read in over 10 different time series tables
+- We cleaned the data and took the mean of each variable across the time period 2009-2019
+- Selection to avoid COVID distortion effeckts and better data quality
+- Assumption: More recent data is more reliable
+
+## Bayesian Modeling Approach
+
+- Employed a Spike-and-Slab Variable Selection (SSVS) prior
+- Used Gibbs sampling to find relevant predictors
+- Aimed to include as many countries as possible (we ended up with 40)
+- Approach inspired by econometric growth prediction models
+
+## Our Model
+
+- We use a Bayesian linear regression model of the form:
 
 \[
 Y = \beta_0 + \beta_1 X_1 + \dots + \beta_k X_k
 \]
 
-- **Y**: Vector of disease frequency or mortality rates (averaged over a specific year)
-- **X**: Matrix of predictors, including GDP per capita, health expenditure per capita, population density, influenza incidence, and population share over 65 years
+- **Y**: Vector of disease frequency or mortality rates (averaged over a specific year). Ended up using Malaria mortality per 100 000 population  
+- **X**: Matrix of predictors, including GDP per capita, health expenditure per capita, population density, influenza incidence, population share over 65 years
 
-The analysis is cross-sectional, comparing different countries rather than analyzing time series data.
+- The analysis is cross-sectional, comparing different countries rather than analyzing time series data
+- Checked for multicoliniarity when [`implementing the model`](/scripts/03_model_SSVS.R)
 
-### Validation
+## Validation
 
-If time allows, we will conduct leave-one-out tests by excluding individual countries to assess the model’s predictive validity.
+- We did leave-one-out analysis by excluding individual countries to assess the model’s predictive validity
+- The results can be seen in [`this script`](/scripts/05_loo_SSVS.R)
 
-### Bayesian Modeling Approach
+## Results
 
-- Employ a Spike-and-Slab Variable Selection (SSVS) prior
-- Use Gibbs sampling if necessary, depending on model complexity
-- Aim to include as many countries as possible
-- Approach inspired by econometric growth prediction models
+- Model does good job at predicting the response variable
+- Some variables more relevant than others (insert examples)
+- Room for improvement
 
-### Data Sources
+## To Do
 
-Data will be sourced primarily from Our World in Data, Human Development Index (HDI), and World Bank datasets.
-For detailed information on the used data, see the README.md file in the Data directory.
+- Check the script for errors (especially the later ones further info can be found at [`README.md file in /scripts`](/scripts))
+- Chose country of interes for prediction
+- Predict the response variable for country of interest. This can be done using the model scrpits in [`/scrpits`](/scripts)
+- Elaborate on visualization and summary of the results 
+- Store results in [`output folder`](/output/)
+- Create presentation for June 24th
 
----
+### Optional
 
-## 02 What we actually did
-
-### Data manipulation
-
-First, we read in over 10 different time series tables. Then we cleaned the data and took the mean of each variable across the time period 2009-2019.
-This period was chosen to avoid any distortion by effeckts caused by COVID. We want to compare the model later to a COVID year (maybe 2021) to better 
-understand the difference the COVID has cuased.
-
-We only included countries with significant Malaria burdon in the analysis. All of them are African countries. Additionally, we tried to keep thing comparable by
-including only countries with similar economic parameters.
-
-Important: for variable Population share over 65, the estimate is no mean but rather the exact estimation for 2011, as we couldn't find any time series data on this. Similarly, for Malaria total cases, there was only an estimate provided (from years 2015-2019 rest was NAs). No lower or higher bound. Hence, we also droped these variables like with the other Malaria Variables. Some of the other variables contained missing data for several years in our time period or for the countries we chose. When calculating the averages for analysis, we took care of NA handling by setting NA = F in R. 
+- Comparison to COVID year (maybe 2021)
+- Check if the prediction was close to the actual data
+- Experiment with inclusion and exclusion of predictors to optimize model
