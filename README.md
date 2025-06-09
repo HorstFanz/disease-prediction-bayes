@@ -4,9 +4,9 @@ This Document is a summary of the project and can be used for the final presenta
 
 ## What we wanted to do (Project Overview)
 
-- Model the frequency or mortality rate of diseases such as malaria or tuberculosis among 
+- Model the frequency or mortality rate of diseases such as malaria or tuberculosis  
 - Use cross sectional analysis for comparing countries with comparable disease (Malaria) incidence
-- Using a Bayesian linear regression framework 
+- Use a Bayesian linear regression framework 
 - Understand and predict disease (Malaira) outcomes based on socio-economic, demographic and medical factors
 
 ## Research Question(s)
@@ -73,7 +73,7 @@ Y = \beta_0 + \beta_1 X_1 + \dots + \beta_k X_k
 ## To Do
 
 - Check the script for errors (especially the later ones further info can be found at [`README.md file in /scripts`](/scripts))
-- Chose country of interes for prediction
+- Chose country of interest for prediction
 - Predict the response variable for country of interest. This can be done using the model scrpits in [`/scrpits`](/scripts)
 - Elaborate on visualization and summary of the results 
 - Store results in [`output folder`](/output/)
