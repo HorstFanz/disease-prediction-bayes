@@ -18,6 +18,11 @@ https://www.who.int/data/gho/data/themes/topics/topic-details/GHO/malaria-cases-
 
 Data source: WHO
 
+Includes three used tables
+- Malaria total cases
+- Malaria estimated incidence
+- Malaria estimated mortality per 100 000 population (potential response Varibale)
+
 
 ### GDP per capita world bank
 
