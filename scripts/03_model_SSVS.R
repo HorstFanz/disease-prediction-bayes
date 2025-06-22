@@ -97,7 +97,7 @@ for (irep in 1:ntot){
   A.post <- V.post%*%(crossprod(X,Y)*1/sigma2.draw)
   # computes the posterior mean using the formula
   A.draw <- A.post+t(chol(V.post))%*%rnorm(K)
-  # draws sample from multivariate noraml distribution
+  # draws sample from multivariate normal distribution
   
   #Draw indicators conditional on ALPHA
   for (jj in 1:K){
@@ -140,7 +140,7 @@ for (k in 1:K){
        xlab="Iteration", ylab="Coefficient")
 }
 
-
+par(mfrow=c(1,1))
 plot(SIGMA.store, type='l', main="Sigma² Trace", xlab="Iteration", ylab="Variance")
 
 
@@ -152,8 +152,12 @@ importance <- data.frame(Variable = colnames(X),
 print(importance[order(-importance$PIP), ])  # Sort by importance
 
 
-
 par(mfrow=c(3,3))
+for (k in 1:K){
+  plot(density(ALPHA.store[,k]), main=colnames(X)[k],
+       xlab="Posterior Draws", col="lightblue")
+}
+
 for (k in 1:K){
   hist(ALPHA.store[,k], main=colnames(X)[k],
        xlab="Posterior Draws", breaks=30, col="lightblue")
@@ -165,7 +169,7 @@ summary(ALPHA.store)
 summary(SIGMA.store)
 summary(Gamma.store)
 
-
+par(mfrow=c(1,1))
 barplot(PIP.mean, names.arg=colnames(X), las=2, col="skyblue",
         main="Posterior Inclusion Probabilities", ylim=c(0,1))
 abline(h=0.5, col="red", lty=2)

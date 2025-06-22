@@ -1,26 +1,308 @@
 ---
-title: "EndTermPresentation"
-author: "Franz-Xaver Wienerroither and Lucas Stadler"
-format: revealjs
+title: "Prediction of malaria deaths in Sub-Saharan Africa"
+author: "Franz-Xaver Wienerroither  and Lucas Stadler"
+format:
+  revealjs: 
+    theme: default
+editor_options: 
+  chunk_output_type: console
+
 ---
 
-## Quarto
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+```
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+## Preconditions
 
-## Bullets
+We simply took those from the original script:
 
-When you click the **Render** button a document will be generated that includes:
+```{r, echo=T}
+nsave <- 1000
+nburn <- 1000
+ntot  <- nsave + nburn        # total Gibbs draws
 
--   Content authored with markdown
--   Output from executable code
+tau0 <- 0.01                  # SSVS hyper-pars
+tau1 <- 10
+s0   <- 0.01                  # IG(a,b) prior on σ²
+S0   <- 0.01
+```
 
-## Code
-
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+<!-- Read and build y and X -->
 
 ```{r}
-1 + 1
+setwd("~/Documents/Studium/MAKRO1/disease-prediction-bayes")
+dat <- read.csv("data/processed/final_table_avg.csv")
+
+Y <- as.matrix(dat$Estimate.y)       # response: malaria mortality (38 × 1)
+
+X <- cbind(1,                                   # intercept
+           scale(dat$GDP.per.capita..PPP..constant.2021.international...),
+           scale(dat$Current.health.expenditure.per.capita..PPP..current.international...),
+           scale(dat$rate.over65),
+           scale(dat$Estimate.x),                # malaria incidence
+           scale(dat$Population.density),
+           scale(dat$Estimated.mortality.from.all.forms.of.tuberculosis.per.100.000.population),
+           scale(dat$Estimated.number.of.deaths.from.all.forms.of.tuberculosis),
+           scale(dat$Share.of.population.residing.in.urban.areas..HYDE.estimates.and.UN.projections.))
+
+# scale normalizes all the predictor variables so they have mean 0 and sd 1.
+# important: if we want to interpret the results for the prediction later, we need to descale again
+
+# rename columns
+colnames(X) <- c("Intercept","GDP","Health","Pop65","MalariaInc",
+                 "Density","TB_Mort","TB_Deaths","Urban")
+
+plot(density(dat$Estimate.x))
+
+
+```
+
+## Dataset
+
+- Source: World Bank, World development index
+- Data is normalized
+
+```{r}
+head(X)
+```
+
+## Handling of missing values
+
+One missing values for health expenditures gets replaced by mean imputation to assure computability.
+
+```{r, include=F}
+NA_detect <- function (obj){ 
+storeNa <- 0
+  for (i in 1:ncol(obj)){
+    for (j in 1:nrow(obj)){
+      if (is.na(obj[j, i])){
+        storeNa <- storeNa + 1
+      }
+    } 
+  }  
+  paste("You have currently: ", storeNa, "NAs in your object")
+}
+
+NA_detect(X)
+#  oh no one missing value detected
+
+# use mean imputation to assure computability
+
+X[is.na(X[, "Health"]), "Health"] <- mean(X[, "Health"], na.rm = TRUE)
+NA_detect(X) # looks better
+```
+
+## Multicolliniarity of the predictors
+
+```{r}
+cor_matrix <- cor(X[,-1])  # Exclude the intercept
+print(round(cor_matrix, 2))  # Rounded for readability
+#sort(unique(cor_matrix))
+```
+
+-   Nothing over 0.8 $\rightarrow$ looks good
+-   Highest correlation between GDP and Health expenditures (0.69)
+
+## Linear model for malaria death's
+
+CAVE: Interpretability due to scaling limited
+
+```{r}
+library(car)
+# lm.no.scale <- lm(Estimate.y~GDP.per.capita..PPP..constant.2021.international.+Current.health.expenditure.per.capita..PPP..current.international...+rate.over65+Estimate.x+Population.density+Estimated.mortality.from.all.forms.of.tuberculosis.per.100.000.population+Estimated.number.of.deaths.from.all.forms.of.tuberculosis+Share.of.population.residing.in.urban.areas..HYDE.estimates.and.UN.projections. , data = dat)
+# 
+
+y_dummy <- dat$Estimated.number.of.malaria.deaths
+lm_model <- lm(y_dummy ~ ., data = as.data.frame(X[,-1]))  # Exclude intercept manually
+summary(lm_model)
+```
+
+## Variance Inflation Factor 
+is at max \~2.43 $\rightarrow$ moderate correlation
+
+```{r vif}
+vif(lm_model) # nothing over 5, looks good
+```
+
+## Actual SSVS model build
+
+Section can stay the same, because we use same object names
+
+```{r, echo=T}
+N <- nrow(X)            # number of countries
+K <- ncol(X)            # number of predictors
+
+# Solve creates inverse so we have here (X'X)^-1 (X'Y) = \hat{\beta}.
+# result is Matrix of OLS regression coefficients
+A.OLS <- solve(crossprod(X))%*%crossprod(X,Y)
+
+# analogous (Y-X\beta)'(Y-X\beta)
+SSE <- crossprod(Y-X%*%A.OLS) 
+
+#Estimate of error variance, N number observations, K number predictors
+SIG.OLS <- SSE/(N-K) 
+```
+
+## Storage matrices for Gibbs loop and initialization of prior
+
+```{r, echo=T}
+# indicators, start with full model
+# we want to start with all predictors included.
+# so we create a Kx1 Matrix filled with 1
+gamma <- matrix(1,K,1) 
+
+# converts to numeric if it wasn't already
+sigma2.draw <- as.numeric(SIG.OLS)
+
+# picks either tau1 or tau0 as prior variance for the variable
+V.prior <- diag(as.numeric(gamma*tau1+(1-gamma)*tau0)) 
+
+# creates matrix with NA entries, nsave rows, K columns
+ALPHA.store <- matrix(NA,nsave,K) 
+
+# creates matrix with NA entries, nsave rows, 1 columns
+SIGMA.store <- matrix(NA,nsave,1)
+
+# creates matrix with NA entries, nsave rows, K columns
+Gamma.store <- matrix(NA,nsave,K) 
+```
+
+## Gibbs loop
+
+```{r, echo=T, results=F}
+for (irep in 1:ntot){
+  # Draw ALPHA given rest from multivariate normal
+  # we need to create the meand and variances to draw 
+  # from the distribution ntot times
+  
+  # Constructing posterior variance according to multivariate formula 
+  # V.post = (1/\sigma^2 * X'X + V^-1.prior)^-1
+  V.post <- solve(crossprod(X)*1/sigma2.draw+diag(1/diag(V.prior)))
+  
+  # Computes the posterior mean using the formula
+  A.post <- V.post%*%(crossprod(X,Y)*1/sigma2.draw)
+  
+  # Draws sample from multivariate normal distribution
+  A.draw <- A.post+t(chol(V.post))%*%rnorm(K)
+  
+  #Draw indicators conditional on ALPHA
+  for (jj in 1:K){
+    # Probability under "exclude" prior
+    p0 <- dnorm(A.draw[[jj]], 0, sqrt(tau0))
+    
+    # Probability under "include" prior
+    p1 <- dnorm(A.draw[[jj]], 0, sqrt(tau1)) 
+    
+    # Posterior inclusion probability
+    p11 <- p1/(p0+p1) 
+    
+    # Bernoulli draw
+    if (p11>runif(1)) gamma[[jj]] <- 1 else gamma[[jj]] <- 0 
+  }
+  # Construct prior VC matrix conditional on gamma
+  V.prior <- diag(as.numeric(gamma*tau1+(1-gamma)*tau0))
+  
+  #Simulate sigma2 from inverse Gamma
+  S.post <- crossprod(Y-X%*%A.draw)/2+S0
+  s.post <- S0+N/2
+  sigma2.draw <- 1/rgamma(1,s.post,S.post)  
+  
+  if (irep>nburn){
+    ALPHA.store[irep-nburn,] <- A.draw
+    SIGMA.store[irep-nburn,] <- sigma2.draw
+    Gamma.store[irep-nburn,] <- gamma
+  }
+  print(irep)
+}
+```
+
+## Calculate posterior inclusion probabilities
+
+```{r, echo=T}
+PIP.mean <- apply(Gamma.store,2,mean)
+A.mean   <- apply(ALPHA.store,2,mean)
+SIG.mean <- apply(SIGMA.store,2,mean)
+```
+
+## SSVS Trace-Plot
+
+```{r}
+par(mfrow=c(3,3))  # arrange plots
+
+for (k in 1:K){
+  plot(ALPHA.store[,k], type='l',
+       main=colnames(X)[k],
+       xlab="Iterations", ylab="Coefficient")
+}
+```
+
+## Sigma² Trace
+
+```{r}
+par(mfrow=c(1,2))
+plot(SIGMA.store, type='l', main="Sigma² Trace", xlab="Iteration", ylab="Variance")
+acf(SIGMA.store, main = "Series")
 ```
 
 
+
+<!-- # ```{r} -->
+<!-- # SIGMA.store.df <- data.frame(iteration = 1:1000,  -->
+<!-- #                              sigma = SIGMA.store) -->
+<!-- #  -->
+<!-- # ggplot(SIGMA.store.df, aes(x=iteration, y=sigma))+ -->
+<!-- #   geom_line()+ -->
+<!-- #   labs(title="Sigma² Trace",  -->
+<!-- #        x="Iterations", -->
+<!-- #        y="Variance")+ -->
+<!-- #   theme_minimal() -->
+<!-- # ``` -->
+
+## Combine and display
+
+```{r}
+importance <- data.frame(Variable = colnames(X),
+                         PIP = round(PIP.mean, 3),
+                         PostMean = round(A.mean, 3))
+
+print(importance[order(-importance$PIP), ])  # Sort by importance
+```
+
+## Posterior density
+
+```{r}
+par(mfrow=c(3,3))
+for (k in 1:K){
+  hist(ALPHA.store[,k], main=colnames(X)[k],
+       xlab="Posterior Draws", breaks=30, col="skyblue", probability = T)
+  lines(density(ALPHA.store[,k]), col="red")
+}
+```
+
+## Summary Alpha
+```{r}
+colnames(ALPHA.store) <- colnames(X)
+summary(ALPHA.store)
+```
+
+## Summary Sigma
+```{r}
+colnames(SIGMA.store) <- "Sigma"
+summary(SIGMA.store)
+```
+
+## Summary Gamma
+```{r}
+colnames(Gamma.store) <- colnames(X)
+summary(Gamma.store)
+```
+
+## Posterior Inclusion Probabilities
+```{r}
+par(mfrow=c(1,1))
+barplot(PIP.mean, names.arg=colnames(X), las=2, col="skyblue",
+        main="", ylim=c(0,1))
+abline(h=0.5, col="red", lty=2)
+```
