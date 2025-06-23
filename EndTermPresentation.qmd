@@ -314,7 +314,8 @@ abline(h=0.5, col="red", lty=2)
 
 # Leave-one-out
 
-```{r}
+
+```{r, include=FALSE}
 # -----------------  SSVS – Leave-One-Out CV  -----------------
 library(MASS)    # mvrnorm() fallback if chol fails
 
@@ -324,7 +325,10 @@ X_scaled[,-1] <- scale(X_raw[,-1])
 Y_scaled <- scale(Y_raw)
 Y_mean   <- attr(Y_scaled, "scaled:center")
 Y_sd     <- attr(Y_scaled, "scaled:scale")
+```
 
+## Hyperparameters
+```{r}
 # ---------- 2. Hyper-parameters & storage -------------------------------
 nsave <- 1000
 nburn <- 1000
@@ -340,7 +344,10 @@ K <- ncol(X_scaled)
 
 pred_scaled <- rep(NA, N)
 pip_mat     <- matrix(NA, N, K)   # PIP per left-out fold
+```
 
+## LOO
+```{r}
 # ---------- 3. LOO loop --------------------------------------------------
 for (i in 1:N) {
   cat("LOO fold", i, "of", N, "\n")
@@ -363,8 +370,7 @@ for (i in 1:N) {
   gamma_keep  <- matrix(NA, nsave, K)
   sigma_keep  <- numeric(nsave)
   y_pred_keep <- numeric(nsave)
-  
-  # ------------- Gibbs sampler -----------------
+# ------------- Gibbs sampler -----------------
   for (rep in 1:ntot){
     
     # 1. β | rest
@@ -395,12 +401,15 @@ for (i in 1:N) {
       y_pred_keep[m]   <- X_test %*% A.draw                # mean prediction
     }
   } # end Gibbs
-  
-  # Posterior predictive mean for left-out obs
+
+# Posterior predictive mean for left-out obs
   pred_scaled[i] <- mean(y_pred_keep)
   pip_mat[i, ]   <- colMeans(gamma_keep)
 }
+```
 
+
+```{r}
 # ---------- 4. Back-transform predictions & evaluate  --------------------
 pred_original <- pred_scaled * Y_sd + Y_mean
 
@@ -414,14 +423,20 @@ loo_results <- data.frame(
 
 print(head(loo_results, 10))
 cat("RMSE: ", sqrt(mean(loo_results$Error^2)), "\n")
+```
 
+
+```{r}
 # ---------- 5. Average PIPs across folds --------------------------------
 overall_pip <- colMeans(pip_mat)
 print(round(overall_pip, 3))
 barplot(overall_pip, names.arg=colnames(X_scaled), las=2, ylim=c(0,1),
         col="skyblue", main="Avg PIP across LOO folds")
 abline(h=0.5, col="red", lty=2)
+```
 
+
+```{r, eval=FALSE}
 # ---------- 6. Save results ---------------------------------------------
 dir.create("results", showWarnings = FALSE)
 write.csv(loo_results, "results/loo_predictions.csv", row.names = FALSE)
