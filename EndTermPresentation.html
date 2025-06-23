@@ -555,8 +555,8 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Preconditions</h2>
 <p>We simply took those from the original script:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>nsave <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb11-2"><a href=""></a>nburn <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>nsave <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb11-2"><a href=""></a>nburn <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
 <span id="cb11-3"><a href=""></a>ntot  <span class="ot">&lt;-</span> nsave <span class="sc">+</span> nburn        <span class="co"># total Gibbs draws</span></span>
 <span id="cb11-4"><a href=""></a></span>
 <span id="cb11-5"><a href=""></a>tau0 <span class="ot">&lt;-</span> <span class="fl">0.01</span>                  <span class="co"># SSVS hyper-pars</span></span>
@@ -674,15 +674,15 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>    Variable   PIP PostMean
-5 MalariaInc 1.000    0.827
-9      Urban 0.171   -0.142
-6    Density 0.160   -0.161
-2        GDP 0.105   -0.112
-4      Pop65 0.074    0.105
-8  TB_Deaths 0.042    0.045
-7    TB_Mort 0.037    0.009
-3     Health 0.033    0.005
-1  Intercept 0.029    0.001</code></pre>
+5 MalariaInc 1.000    0.824
+6    Density 0.206   -0.166
+9      Urban 0.172   -0.147
+2        GDP 0.107   -0.112
+4      Pop65 0.091    0.109
+8  TB_Deaths 0.044    0.043
+3     Health 0.043    0.008
+7    TB_Mort 0.043    0.011
+1  Intercept 0.037    0.000</code></pre>
 </div>
 </div>
 </section>
@@ -694,27 +694,27 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Summary Alpha</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>   Intercept              GDP              Health              Pop65         
- Min.   :-0.185786   Min.   :-0.4050   Min.   :-0.217391   Min.   :-0.10783  
- 1st Qu.:-0.037034   1st Qu.:-0.1583   1st Qu.:-0.042756   1st Qu.: 0.05936  
- Median : 0.002013   Median :-0.1121   Median : 0.004108   Median : 0.10598  
- Mean   : 0.001464   Mean   :-0.1118   Mean   : 0.005295   Mean   : 0.10496  
- 3rd Qu.: 0.040423   3rd Qu.:-0.0624   3rd Qu.: 0.053921   3rd Qu.: 0.14839  
- Max.   : 0.173586   Max.   : 0.1505   Max.   : 0.228271   Max.   : 0.37525  
-   MalariaInc        Density            TB_Mort            TB_Deaths        
- Min.   :0.5527   Min.   :-0.45248   Min.   :-0.207055   Min.   :-0.174479  
- 1st Qu.:0.7749   1st Qu.:-0.20817   1st Qu.:-0.037702   1st Qu.: 0.003152  
- Median :0.8263   Median :-0.15914   Median : 0.007834   Median : 0.042247  
- Mean   :0.8268   Mean   :-0.16069   Mean   : 0.009035   Mean   : 0.044523  
- 3rd Qu.:0.8818   3rd Qu.:-0.10826   3rd Qu.: 0.055614   3rd Qu.: 0.086215  
- Max.   :1.0983   Max.   : 0.09524   Max.   : 0.214924   Max.   : 0.261957  
+<pre><code>   Intercept               GDP               Health              Pop65        
+ Min.   :-0.2228527   Min.   :-0.55448   Min.   :-0.290115   Min.   :-0.1504  
+ 1st Qu.:-0.0391020   1st Qu.:-0.16073   1st Qu.:-0.039970   1st Qu.: 0.0622  
+ Median : 0.0001859   Median :-0.10903   Median : 0.007789   Median : 0.1079  
+ Mean   : 0.0001285   Mean   :-0.11234   Mean   : 0.008054   Mean   : 0.1088  
+ 3rd Qu.: 0.0390459   3rd Qu.:-0.05937   3rd Qu.: 0.056455   3rd Qu.: 0.1541  
+ Max.   : 0.2401192   Max.   : 0.17068   Max.   : 0.368216   Max.   : 0.4184  
+   MalariaInc        Density           TB_Mort           TB_Deaths        
+ Min.   :0.5202   Min.   :-0.5608   Min.   :-0.23685   Min.   :-0.205681  
+ 1st Qu.:0.7715   1st Qu.:-0.2147   1st Qu.:-0.03404   1st Qu.: 0.001402  
+ Median :0.8231   Median :-0.1605   Median : 0.01104   Median : 0.042171  
+ Mean   :0.8237   Mean   :-0.1659   Mean   : 0.01123   Mean   : 0.042603  
+ 3rd Qu.:0.8773   3rd Qu.:-0.1095   3rd Qu.: 0.05705   3rd Qu.: 0.083865  
+ Max.   :1.1117   Max.   : 0.1860   Max.   : 0.26798   Max.   : 0.353189  
      Urban         
- Min.   :-0.43749  
- 1st Qu.:-0.19470  
- Median :-0.13849  
- Mean   :-0.14171  
- 3rd Qu.:-0.08411  
- Max.   : 0.11941  </code></pre>
+ Min.   :-0.56686  
+ 1st Qu.:-0.19647  
+ Median :-0.14123  
+ Mean   :-0.14681  
+ 3rd Qu.:-0.08898  
+ Max.   : 0.17247  </code></pre>
 </div>
 </div>
 </section>
@@ -722,13 +722,13 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Summary Sigma</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>     Sigma       
- Min.   :0.0819  
- 1st Qu.:0.1658  
- Median :0.1968  
- Mean   :0.2064  
- 3rd Qu.:0.2361  
- Max.   :0.5193  </code></pre>
+<pre><code>     Sigma        
+ Min.   :0.07692  
+ 1st Qu.:0.16515  
+ Median :0.19752  
+ Mean   :0.20675  
+ 3rd Qu.:0.23760  
+ Max.   :0.64148  </code></pre>
 </div>
 </div>
 </section>
@@ -736,20 +736,27 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Summary Gamma</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>   Intercept          GDP            Health          Pop65         MalariaInc
- Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1   
- 1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1   
- Median :0.000   Median :0.000   Median :0.000   Median :0.000   Median :1   
- Mean   :0.029   Mean   :0.105   Mean   :0.033   Mean   :0.074   Mean   :1   
- 3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:1   
- Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :1   
-    Density        TB_Mort        TB_Deaths         Urban      
- Min.   :0.00   Min.   :0.000   Min.   :0.000   Min.   :0.000  
- 1st Qu.:0.00   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000  
- Median :0.00   Median :0.000   Median :0.000   Median :0.000  
- Mean   :0.16   Mean   :0.037   Mean   :0.042   Mean   :0.171  
- 3rd Qu.:0.00   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000  
- Max.   :1.00   Max.   :1.000   Max.   :1.000   Max.   :1.000  </code></pre>
+<pre><code>   Intercept           GDP             Health           Pop65      
+ Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.000  
+ 1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.000  
+ Median :0.0000   Median :0.0000   Median :0.0000   Median :0.000  
+ Mean   :0.0366   Mean   :0.1067   Mean   :0.0428   Mean   :0.091  
+ 3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.000  
+ Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.000  
+   MalariaInc    Density          TB_Mort         TB_Deaths     
+ Min.   :1    Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+ 1st Qu.:1    1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000  
+ Median :1    Median :0.0000   Median :0.0000   Median :0.0000  
+ Mean   :1    Mean   :0.2061   Mean   :0.0427   Mean   :0.0435  
+ 3rd Qu.:1    3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+ Max.   :1    Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
+     Urban       
+ Min.   :0.0000  
+ 1st Qu.:0.0000  
+ Median :0.0000  
+ Mean   :0.1722  
+ 3rd Qu.:0.0000  
+ Max.   :1.0000  </code></pre>
 </div>
 </div>
 </section>
@@ -802,22 +809,22 @@ LOO fold 38 of 38 </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                    Country       True Predicted       Error          MSE
-1                    Angola  46.794897  42.81409  -3.9808055   15.8468120
-2                     Benin  88.744997 102.59340  13.8484024  191.7782492
-3              Burkina Faso 146.460451 131.49098 -14.9694709  224.0850593
-4                   Burundi  50.706239  38.60944 -12.0967963  146.3324797
-5                  Cameroon  55.371605  55.64667   0.2750689    0.0756629
-6  Central African Republic 111.271410  95.45338 -15.8180295  250.2100569
-7                      Chad  93.260925  69.91144 -23.3494814  545.1982830
-8                   Comoros   8.037874 -25.82920 -33.8670746 1146.9787402
-9                     Congo  40.665282  41.40845   0.7431717    0.5523042
-10            Cote d'Ivoire  68.569683  74.91913   6.3494441   40.3154404</code></pre>
+1                    Angola  46.794897  42.63434  -4.1605555   17.3102220
+2                     Benin  88.744997 102.90025  14.1552523  200.3711675
+3              Burkina Faso 146.460451 130.79897 -15.6614830  245.2820501
+4                   Burundi  50.706239  38.41268 -12.2935604  151.1316274
+5                  Cameroon  55.371605  55.78518   0.4135761    0.1710452
+6  Central African Republic 111.271410  96.75063 -14.5207766  210.8529527
+7                      Chad  93.260925  70.12281 -23.1381108  535.3721717
+8                   Comoros   8.037874 -25.86979 -33.9076645 1149.7297133
+9                     Congo  40.665282  41.84449   1.1792105    1.3905375
+10            Cote d'Ivoire  68.569683  74.42511   5.8554265   34.2860190</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>RMSE:  23.05015 </code></pre>
+<pre><code>RMSE:  23.02725 </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.092 0.113 0.101 0.111 0.701 0.130 0.093 0.098 0.127</code></pre>
+<pre><code>[1] 0.092 0.113 0.101 0.111 0.699 0.129 0.094 0.097 0.127</code></pre>
 </div>
 
 </div>

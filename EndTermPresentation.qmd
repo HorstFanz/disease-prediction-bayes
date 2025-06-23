@@ -18,7 +18,7 @@ set.seed(123)
 
 <!-- Read and build y and X -->
 
-```{r, X_in_rax_form}
+```{r, Raw form}
 rm(list=ls())
 
 setwd("~/Documents/Studium/MAKRO1/disease-prediction-bayes")
@@ -136,8 +136,8 @@ vif(lm_model_scale)
 We simply took those from the original script:
 
 ```{r, echo=T}
-nsave <- 1000
-nburn <- 1000
+nsave <- 10000
+nburn <- 2000
 ntot  <- nsave + nburn        # total Gibbs draws
 
 tau0 <- 0.01                  # SSVS hyper-pars
@@ -259,9 +259,10 @@ for (k in 1:K){
 ## Sigma² Trace
 
 ```{r}
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 plot(SIGMA.store, type='l', main="Sigma² Trace", xlab="Iteration", ylab="Variance")
 acf(SIGMA.store, main = "Series")
+hist(SIGMA.store, breaks=50, main="Sigma² Histogram")
 ```
 
 ## Combine and display
@@ -316,7 +317,6 @@ abline(h=0.5, col="red", lty=2)
 ```{r}
 # -----------------  SSVS – Leave-One-Out CV  -----------------
 library(MASS)    # mvrnorm() fallback if chol fails
-
 
 # -------  scale X (except intercept) & Y  ----------------
 X_scaled <- X_raw
