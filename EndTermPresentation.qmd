@@ -48,17 +48,17 @@ X_raw[is.na(X_raw[,"Health"]),"Health"] <-
 ```
 
 ```{r, Normalized}
-Y <- as.matrix(scale(dat$Estimate.y))       # response: malaria mortality (38 × 1)
+Y <- Y_raw #as.matrix(scale(dat$Estimate.y))       # response: malaria mortality (38 × 1)
 
-X <- cbind(1,                                   # intercept
-           scale(dat$GDP.per.capita..PPP..constant.2021.international...),
-           scale(dat$Current.health.expenditure.per.capita..PPP..current.international...),
-           scale(dat$rate.over65),
-           scale(dat$Estimate.x),                # malaria incidence
-           scale(dat$Population.density),
-           scale(dat$Estimated.mortality.from.all.forms.of.tuberculosis.per.100.000.population),
-           scale(dat$Estimated.number.of.deaths.from.all.forms.of.tuberculosis),
-           scale(dat$Share.of.population.residing.in.urban.areas..HYDE.estimates.and.UN.projections.))
+X <- X_raw # cbind(1,                                   # intercept
+           # scale(dat$GDP.per.capita..PPP..constant.2021.international...),
+           # scale(dat$Current.health.expenditure.per.capita..PPP..current.international...),
+           # scale(dat$rate.over65),
+           # scale(dat$Estimate.x),                # malaria incidence
+           # scale(dat$Population.density),
+           # scale(dat$Estimated.mortality.from.all.forms.of.tuberculosis.per.100.000.population),
+           # scale(dat$Estimated.number.of.deaths.from.all.forms.of.tuberculosis),
+           # scale(dat$Share.of.population.residing.in.urban.areas..HYDE.estimates.and.UN.projections.))
 
 # scale normalizes all the predictor variables so they have mean 0 and sd 1.
 # important: if we want to interpret the results for the prediction later, we need to descale again
@@ -347,7 +347,7 @@ pip_mat     <- matrix(NA, N, K)   # PIP per left-out fold
 ```
 
 ## LOO
-```{r}
+```{r, echo=T, results=FALSE}
 # ---------- 3. LOO loop --------------------------------------------------
 for (i in 1:N) {
   cat("LOO fold", i, "of", N, "\n")
@@ -408,8 +408,8 @@ for (i in 1:N) {
 }
 ```
 
-
-```{r}
+## Back transform predictions and evaluate
+```{r, echo = TRUE}
 # ---------- 4. Back-transform predictions & evaluate  --------------------
 pred_original <- pred_scaled * Y_sd + Y_mean
 
@@ -425,7 +425,7 @@ print(head(loo_results, 10))
 cat("RMSE: ", sqrt(mean(loo_results$Error^2)), "\n")
 ```
 
-
+## Posterior inclusion probabilities
 ```{r}
 # ---------- 5. Average PIPs across folds --------------------------------
 overall_pip <- colMeans(pip_mat)

@@ -434,13 +434,13 @@ Franz-Xaver Wienerroither and Lucas Stadler
 <pre><code>[1] "Normalized data"</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       GDP Health Pop65 MalariaInc Density TB_Mort TB_Deaths Urban
-[1,]  0.94   0.25  1.12      -0.32   -0.62    0.54      0.30  1.45
-[2,] -0.29  -0.50  0.42       1.29    0.05   -1.12     -0.52  0.35
-[3,] -0.44  -0.41  0.54       1.73   -0.23   -1.15     -0.50 -0.71
-[4,] -0.66  -0.62  0.10      -0.17    2.87   -0.79     -0.47 -1.78
-[5,]  0.02  -0.21 -0.41       0.34   -0.40    0.05     -0.04  1.44
-[6,] -0.61  -0.69 -0.08       1.03   -0.75    2.78     -0.24  0.13</code></pre>
+<pre><code>         GDP Health Pop65 MalariaInc Density TB_Mort TB_Deaths Urban
+[1,] 9516.49 193.01 73.83     187.64   21.85   90.00  24272.73 61.27
+[2,] 2934.26  76.07 68.69     397.96   98.15   13.09   1381.82 44.64
+[3,] 2085.61  90.72 69.59     456.25   66.80   11.94   2145.45 28.63
+[4,]  924.69  58.44 66.41     207.51  415.11   28.64   2909.09 12.56
+[5,] 4574.80 121.58 62.66     274.35   46.91   67.36  14818.18 61.06
+[6,] 1224.41  47.11 65.09     364.89    7.50  193.82   9354.55 41.39</code></pre>
 </div>
 </div>
 </section>
@@ -505,24 +505,24 @@ Call:
 lm(formula = Y ~ . - Intercept, data = M_scale)
 
 Residuals:
-     Min       1Q   Median       3Q      Max 
--0.78419 -0.19350 -0.00145  0.19121  1.11901 
+    Min      1Q  Median      3Q     Max 
+-33.658  -8.305  -0.062   8.207  48.029 
 
 Coefficients:
               Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  3.595e-16  6.856e-02   0.000  1.00000    
-GDP         -1.943e-01  1.069e-01  -1.817  0.07956 .  
-Health       1.026e-01  1.099e-01   0.933  0.35840    
-Pop65        2.067e-01  7.908e-02   2.614  0.01405 *  
-MalariaInc   8.215e-01  7.640e-02  10.753 1.24e-11 ***
-Density     -2.828e-01  8.244e-02  -3.430  0.00183 ** 
-TB_Mort     -7.404e-03  8.717e-02  -0.085  0.93289    
-TB_Deaths    7.851e-02  7.445e-02   1.055  0.30033    
-Urban       -2.689e-01  9.078e-02  -2.962  0.00604 ** 
+(Intercept) -4.157e+01  3.006e+01  -1.383  0.17724    
+GDP         -1.552e-03  8.540e-04  -1.817  0.07956 .  
+Health       2.846e-02  3.049e-02   0.933  0.35840    
+Pop65        1.210e+00  4.631e-01   2.614  0.01405 *  
+MalariaInc   2.699e-01  2.510e-02  10.753 1.24e-11 ***
+Density     -1.078e-01  3.142e-02  -3.430  0.00183 ** 
+TB_Mort     -6.866e-03  8.083e-02  -0.085  0.93289    
+TB_Deaths    1.217e-04  1.154e-04   1.055  0.30033    
+Urban       -7.668e-01  2.589e-01  -2.962  0.00604 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.4226 on 29 degrees of freedom
+Residual standard error: 18.14 on 29 degrees of freedom
 Multiple R-squared:   0.86, Adjusted R-squared:  0.8214 
 F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 </div>
@@ -674,15 +674,15 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>    Variable   PIP PostMean
-5 MalariaInc 1.000    0.824
-6    Density 0.206   -0.166
-9      Urban 0.172   -0.147
-2        GDP 0.107   -0.112
-4      Pop65 0.091    0.109
-8  TB_Deaths 0.044    0.043
-3     Health 0.043    0.008
-7    TB_Mort 0.043    0.011
-1  Intercept 0.037    0.000</code></pre>
+5 MalariaInc 0.588    0.277
+1  Intercept 0.491    0.137
+9      Urban 0.304   -0.214
+4      Pop65 0.298    0.207
+6    Density 0.046   -0.076
+7    TB_Mort 0.042   -0.007
+3     Health 0.032    0.022
+8  TB_Deaths 0.030    0.000
+2        GDP 0.029   -0.002</code></pre>
 </div>
 </div>
 </section>
@@ -694,27 +694,27 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Summary Alpha</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>   Intercept               GDP               Health              Pop65        
- Min.   :-0.2228527   Min.   :-0.55448   Min.   :-0.290115   Min.   :-0.1504  
- 1st Qu.:-0.0391020   1st Qu.:-0.16073   1st Qu.:-0.039970   1st Qu.: 0.0622  
- Median : 0.0001859   Median :-0.10903   Median : 0.007789   Median : 0.1079  
- Mean   : 0.0001285   Mean   :-0.11234   Mean   : 0.008054   Mean   : 0.1088  
- 3rd Qu.: 0.0390459   3rd Qu.:-0.05937   3rd Qu.: 0.056455   3rd Qu.: 0.1541  
- Max.   : 0.2401192   Max.   : 0.17068   Max.   : 0.368216   Max.   : 0.4184  
-   MalariaInc        Density           TB_Mort           TB_Deaths        
- Min.   :0.5202   Min.   :-0.5608   Min.   :-0.23685   Min.   :-0.205681  
- 1st Qu.:0.7715   1st Qu.:-0.2147   1st Qu.:-0.03404   1st Qu.: 0.001402  
- Median :0.8231   Median :-0.1605   Median : 0.01104   Median : 0.042171  
- Mean   :0.8237   Mean   :-0.1659   Mean   : 0.01123   Mean   : 0.042603  
- 3rd Qu.:0.8773   3rd Qu.:-0.1095   3rd Qu.: 0.05705   3rd Qu.: 0.083865  
- Max.   :1.1117   Max.   : 0.1860   Max.   : 0.26798   Max.   : 0.353189  
-     Urban         
- Min.   :-0.56686  
- 1st Qu.:-0.19647  
- Median :-0.14123  
- Mean   :-0.14681  
- 3rd Qu.:-0.08898  
- Max.   : 0.17247  </code></pre>
+<pre><code>   Intercept               GDP                Health         
+ Min.   :-10.953778   Min.   :-0.005596   Min.   :-0.106725  
+ 1st Qu.: -0.150533   1st Qu.:-0.002445   1st Qu.: 0.001466  
+ Median :  0.009463   Median :-0.001840   Median : 0.021988  
+ Mean   :  0.136925   Mean   :-0.001829   Mean   : 0.021712  
+ 3rd Qu.:  0.262132   3rd Qu.:-0.001226   3rd Qu.: 0.042293  
+ Max.   : 11.014724   Max.   : 0.002225   Max.   : 0.135497  
+     Pop65            MalariaInc        Density            TB_Mort         
+ Min.   :-0.33830   Min.   :0.1356   Min.   :-0.21129   Min.   :-0.246962  
+ 1st Qu.: 0.03686   1st Qu.:0.2591   1st Qu.:-0.09733   1st Qu.:-0.051045  
+ Median : 0.11672   Median :0.2774   Median :-0.07440   Median :-0.007435  
+ Mean   : 0.20661   Mean   :0.2768   Mean   :-0.07564   Mean   :-0.007466  
+ 3rd Qu.: 0.26582   3rd Qu.:0.2955   3rd Qu.:-0.05283   3rd Qu.: 0.036887  
+ Max.   : 1.53580   Max.   :0.3800   Max.   : 0.09426   Max.   : 0.247767  
+   TB_Deaths              Urban         
+ Min.   :-4.602e-04   Min.   :-1.59573  
+ 1st Qu.: 2.823e-05   1st Qu.:-0.27432  
+ Median : 1.110e-04   Median :-0.09711  
+ Mean   : 1.115e-04   Mean   :-0.21363  
+ 3rd Qu.: 1.954e-04   3rd Qu.:-0.01285  
+ Max.   : 6.082e-04   Max.   : 0.47940  </code></pre>
 </div>
 </div>
 </section>
@@ -722,13 +722,13 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Summary Sigma</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>     Sigma        
- Min.   :0.07692  
- 1st Qu.:0.16515  
- Median :0.19752  
- Mean   :0.20675  
- 3rd Qu.:0.23760  
- Max.   :0.64148  </code></pre>
+<pre><code>     Sigma       
+ Min.   : 155.0  
+ 1st Qu.: 335.9  
+ Median : 401.6  
+ Mean   : 420.5  
+ 3rd Qu.: 483.1  
+ Max.   :1398.6  </code></pre>
 </div>
 </div>
 </section>
@@ -736,26 +736,26 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Summary Gamma</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>   Intercept           GDP             Health           Pop65      
- Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.000  
- 1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.000  
- Median :0.0000   Median :0.0000   Median :0.0000   Median :0.000  
- Mean   :0.0366   Mean   :0.1067   Mean   :0.0428   Mean   :0.091  
- 3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.000  
- Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.000  
-   MalariaInc    Density          TB_Mort         TB_Deaths     
- Min.   :1    Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
- 1st Qu.:1    1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000  
- Median :1    Median :0.0000   Median :0.0000   Median :0.0000  
- Mean   :1    Mean   :0.2061   Mean   :0.0427   Mean   :0.0435  
- 3rd Qu.:1    3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000  
- Max.   :1    Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
+<pre><code>   Intercept           GDP             Health           Pop65       
+ Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+ 1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000  
+ Median :0.0000   Median :0.0000   Median :0.0000   Median :0.0000  
+ Mean   :0.4907   Mean   :0.0287   Mean   :0.0324   Mean   :0.2981  
+ 3rd Qu.:1.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:1.0000  
+ Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
+   MalariaInc        Density          TB_Mort         TB_Deaths     
+ Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+ 1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000  
+ Median :1.0000   Median :0.0000   Median :0.0000   Median :0.0000  
+ Mean   :0.5885   Mean   :0.0461   Mean   :0.0417   Mean   :0.0295  
+ 3rd Qu.:1.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+ Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
      Urban       
  Min.   :0.0000  
  1st Qu.:0.0000  
  Median :0.0000  
- Mean   :0.1722  
- 3rd Qu.:0.0000  
+ Mean   :0.3037  
+ 3rd Qu.:1.0000  
  Max.   :1.0000  </code></pre>
 </div>
 </div>
@@ -764,51 +764,92 @@ F-statistic: 22.27 on 8 and 29 DF,  p-value: 2.033e-10</code></pre>
 <h2>Posterior Inclusion Probabilities</h2>
 
 <img data-src="EndTermPresentation_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section></section>
+<section>
 <section id="leave-one-out" class="title-slide slide level1 center">
 <h1>Leave-one-out</h1>
+
+</section>
+<section id="hyperparameters" class="slide level2">
+<h2>Hyperparameters</h2>
+</section>
+<section id="loo" class="slide level2">
+<h2>LOO</h2>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>LOO fold 1 of 38 
-LOO fold 2 of 38 
-LOO fold 3 of 38 
-LOO fold 4 of 38 
-LOO fold 5 of 38 
-LOO fold 6 of 38 
-LOO fold 7 of 38 
-LOO fold 8 of 38 
-LOO fold 9 of 38 
-LOO fold 10 of 38 
-LOO fold 11 of 38 
-LOO fold 12 of 38 
-LOO fold 13 of 38 
-LOO fold 14 of 38 
-LOO fold 15 of 38 
-LOO fold 16 of 38 
-LOO fold 17 of 38 
-LOO fold 18 of 38 
-LOO fold 19 of 38 
-LOO fold 20 of 38 
-LOO fold 21 of 38 
-LOO fold 22 of 38 
-LOO fold 23 of 38 
-LOO fold 24 of 38 
-LOO fold 25 of 38 
-LOO fold 26 of 38 
-LOO fold 27 of 38 
-LOO fold 28 of 38 
-LOO fold 29 of 38 
-LOO fold 30 of 38 
-LOO fold 31 of 38 
-LOO fold 32 of 38 
-LOO fold 33 of 38 
-LOO fold 34 of 38 
-LOO fold 35 of 38 
-LOO fold 36 of 38 
-LOO fold 37 of 38 
-LOO fold 38 of 38 </code></pre>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href=""></a><span class="co"># ---------- 3. LOO loop --------------------------------------------------</span></span>
+<span id="cb20-2"><a href=""></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb20-3"><a href=""></a>  <span class="fu">cat</span>(<span class="st">"LOO fold"</span>, i, <span class="st">"of"</span>, N, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb20-4"><a href=""></a>  </span>
+<span id="cb20-5"><a href=""></a>  X_train <span class="ot">&lt;-</span> X_scaled[<span class="sc">-</span>i, ]</span>
+<span id="cb20-6"><a href=""></a>  Y_train <span class="ot">&lt;-</span> Y_scaled[<span class="sc">-</span>i]</span>
+<span id="cb20-7"><a href=""></a>  X_test  <span class="ot">&lt;-</span> X_scaled[i, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb20-8"><a href=""></a>  </span>
+<span id="cb20-9"><a href=""></a>  <span class="co"># ----- OLS starting values ----------</span></span>
+<span id="cb20-10"><a href=""></a>  A.OLS <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(X_train)) <span class="sc">%*%</span> <span class="fu">crossprod</span>(X_train, Y_train)</span>
+<span id="cb20-11"><a href=""></a>  SSE   <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(Y_train <span class="sc">-</span> X_train <span class="sc">%*%</span> A.OLS)</span>
+<span id="cb20-12"><a href=""></a>  SIG.OLS <span class="ot">&lt;-</span> SSE <span class="sc">/</span> (N<span class="dv">-1</span> <span class="sc">-</span> K)</span>
+<span id="cb20-13"><a href=""></a>  </span>
+<span id="cb20-14"><a href=""></a>  gamma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, K, <span class="dv">1</span>)</span>
+<span id="cb20-15"><a href=""></a>  sigma2.draw <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(SIG.OLS)</span>
+<span id="cb20-16"><a href=""></a>  V.prior <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">as.numeric</span>(gamma <span class="sc">*</span> tau1 <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>gamma) <span class="sc">*</span> tau0))</span>
+<span id="cb20-17"><a href=""></a>  </span>
+<span id="cb20-18"><a href=""></a>  <span class="co"># storage for this fold</span></span>
+<span id="cb20-19"><a href=""></a>  alpha_keep  <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, nsave, K)</span>
+<span id="cb20-20"><a href=""></a>  gamma_keep  <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, nsave, K)</span>
+<span id="cb20-21"><a href=""></a>  sigma_keep  <span class="ot">&lt;-</span> <span class="fu">numeric</span>(nsave)</span>
+<span id="cb20-22"><a href=""></a>  y_pred_keep <span class="ot">&lt;-</span> <span class="fu">numeric</span>(nsave)</span>
+<span id="cb20-23"><a href=""></a><span class="co"># ------------- Gibbs sampler -----------------</span></span>
+<span id="cb20-24"><a href=""></a>  <span class="cf">for</span> (rep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>ntot){</span>
+<span id="cb20-25"><a href=""></a>    </span>
+<span id="cb20-26"><a href=""></a>    <span class="co"># 1. β | rest</span></span>
+<span id="cb20-27"><a href=""></a>    V.post <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(X_train) <span class="sc">/</span> sigma2.draw <span class="sc">+</span></span>
+<span id="cb20-28"><a href=""></a>                      <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(V.prior)))</span>
+<span id="cb20-29"><a href=""></a>    A.post <span class="ot">&lt;-</span> V.post <span class="sc">%*%</span> (<span class="fu">crossprod</span>(X_train, Y_train) <span class="sc">/</span> sigma2.draw)</span>
+<span id="cb20-30"><a href=""></a>    A.draw <span class="ot">&lt;-</span> A.post <span class="sc">+</span> <span class="fu">t</span>(<span class="fu">chol</span>(V.post)) <span class="sc">%*%</span> <span class="fu">rnorm</span>(K)</span>
+<span id="cb20-31"><a href=""></a>    </span>
+<span id="cb20-32"><a href=""></a>    <span class="co"># 2. γ | rest</span></span>
+<span id="cb20-33"><a href=""></a>    <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>K){</span>
+<span id="cb20-34"><a href=""></a>      p0 <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(A.draw[j], <span class="dv">0</span>, <span class="fu">sqrt</span>(tau0))</span>
+<span id="cb20-35"><a href=""></a>      p1 <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(A.draw[j], <span class="dv">0</span>, <span class="fu">sqrt</span>(tau1))</span>
+<span id="cb20-36"><a href=""></a>      gamma[j] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, p1<span class="sc">/</span>(p0<span class="sc">+</span>p1))</span>
+<span id="cb20-37"><a href=""></a>    }</span>
+<span id="cb20-38"><a href=""></a>    V.prior <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">as.numeric</span>(gamma <span class="sc">*</span> tau1 <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>gamma) <span class="sc">*</span> tau0))</span>
+<span id="cb20-39"><a href=""></a>    </span>
+<span id="cb20-40"><a href=""></a>    <span class="co"># 3. σ² | rest</span></span>
+<span id="cb20-41"><a href=""></a>    S.post <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(Y_train <span class="sc">-</span> X_train <span class="sc">%*%</span> A.draw)<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> S0</span>
+<span id="cb20-42"><a href=""></a>    s.post <span class="ot">&lt;-</span> S0 <span class="sc">+</span> (N<span class="dv">-1</span>)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb20-43"><a href=""></a>    sigma2.draw <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">rgamma</span>(<span class="dv">1</span>, s.post, S.post)</span>
+<span id="cb20-44"><a href=""></a>    </span>
+<span id="cb20-45"><a href=""></a>    <span class="co"># ---- store after burn-in</span></span>
+<span id="cb20-46"><a href=""></a>    <span class="cf">if</span> (rep <span class="sc">&gt;</span> nburn) {</span>
+<span id="cb20-47"><a href=""></a>      m <span class="ot">&lt;-</span> rep <span class="sc">-</span> nburn</span>
+<span id="cb20-48"><a href=""></a>      alpha_keep[m, ]  <span class="ot">&lt;-</span> A.draw</span>
+<span id="cb20-49"><a href=""></a>      gamma_keep[m, ]  <span class="ot">&lt;-</span> gamma</span>
+<span id="cb20-50"><a href=""></a>      sigma_keep[m]    <span class="ot">&lt;-</span> sigma2.draw</span>
+<span id="cb20-51"><a href=""></a>      y_pred_keep[m]   <span class="ot">&lt;-</span> X_test <span class="sc">%*%</span> A.draw                <span class="co"># mean prediction</span></span>
+<span id="cb20-52"><a href=""></a>    }</span>
+<span id="cb20-53"><a href=""></a>  } <span class="co"># end Gibbs</span></span>
+<span id="cb20-54"><a href=""></a></span>
+<span id="cb20-55"><a href=""></a><span class="co"># Posterior predictive mean for left-out obs</span></span>
+<span id="cb20-56"><a href=""></a>  pred_scaled[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(y_pred_keep)</span>
+<span id="cb20-57"><a href=""></a>  pip_mat[i, ]   <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(gamma_keep)</span>
+<span id="cb20-58"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
+</section>
+<section id="back-transform-predictions-and-evaluate" class="slide level2">
+<h2>Back transform predictions and evaluate</h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a><span class="co"># ---------- 4. Back-transform predictions &amp; evaluate  --------------------</span></span>
+<span id="cb21-2"><a href=""></a>pred_original <span class="ot">&lt;-</span> pred_scaled <span class="sc">*</span> Y_sd <span class="sc">+</span> Y_mean</span>
+<span id="cb21-3"><a href=""></a></span>
+<span id="cb21-4"><a href=""></a>loo_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb21-5"><a href=""></a>  <span class="at">Country   =</span> dat<span class="sc">$</span>Entity.x,</span>
+<span id="cb21-6"><a href=""></a>  <span class="at">True      =</span> Y_raw,</span>
+<span id="cb21-7"><a href=""></a>  <span class="at">Predicted =</span> pred_original,</span>
+<span id="cb21-8"><a href=""></a>  <span class="at">Error     =</span> pred_original <span class="sc">-</span> Y_raw,</span>
+<span id="cb21-9"><a href=""></a>  <span class="at">MSE =</span> (pred_original <span class="sc">-</span> Y_raw)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb21-10"><a href=""></a>)</span>
+<span id="cb21-11"><a href=""></a></span>
+<span id="cb21-12"><a href=""></a><span class="fu">print</span>(<span class="fu">head</span>(loo_results, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                    Country       True Predicted       Error          MSE
 1                    Angola  46.794897  42.63434  -4.1605555   17.3102220
@@ -822,10 +863,14 @@ LOO fold 38 of 38 </code></pre>
 9                     Congo  40.665282  41.84449   1.1792105    1.3905375
 10            Cote d'Ivoire  68.569683  74.42511   5.8554265   34.2860190</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href=""></a><span class="fu">cat</span>(<span class="st">"RMSE: "</span>, <span class="fu">sqrt</span>(<span class="fu">mean</span>(loo_results<span class="sc">$</span>Error<span class="sc">^</span><span class="dv">2</span>)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>RMSE:  23.02725 </code></pre>
 </div>
 </div>
+</section>
+<section id="posterior-inclusion-probabilities-1" class="slide level2">
+<h2>Posterior inclusion probabilities</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.092 0.113 0.101 0.111 0.699 0.129 0.094 0.097 0.127</code></pre>
@@ -837,7 +882,7 @@ LOO fold 38 of 38 </code></pre>
 
 </div>
 </div>
-</section>
+</section></section>
     </div>
   </div>
 
