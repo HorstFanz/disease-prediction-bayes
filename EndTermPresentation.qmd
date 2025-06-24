@@ -8,7 +8,6 @@ editor_options:
   chunk_output_type: console
 
 ---
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(ggplot2)
@@ -16,15 +15,12 @@ library(dplyr)
 set.seed(123)
 ```
 
-<!-- Read and build y and X -->
-
-```{r, Raw form}
-rm(list=ls())
-
+```{r, include=FALSE}
 setwd("~/Documents/Studium/MAKRO1/disease-prediction-bayes")
 dat <- read.csv("data/processed/final_table_avg.csv")
 
-Y_raw <- dat$Estimate.y                         # 38 × 1
+Y_raw <- as.matrix(dat$Estimate.y)
+# 38 × 1
 X_raw <- cbind(
   1,
   dat$GDP.per.capita..PPP..constant.2021.international...,
@@ -39,49 +35,56 @@ X_raw <- cbind(
 colnames(X_raw) <- c("Intercept","GDP","Health","Pop65",
                      "MalariaInc","Density","TB_Mort",
                      "TB_Deaths","Urban")
-sum(is.na(X_raw))
 
 # Mean-impute the single NA in Health
 X_raw[is.na(X_raw[,"Health"]),"Health"] <-
   mean(X_raw[,"Health"], na.rm = TRUE)
-
 ```
 
-```{r, Normalized}
-Y <- Y_raw #as.matrix(scale(dat$Estimate.y))       # response: malaria mortality (38 × 1)
+```{r, include=FALSE}
+Y_scale <- as.matrix(scale(dat$Estimate.y))       # response: malaria mortality (38 × 1)
 
-X <- X_raw # cbind(1,                                   # intercept
-           # scale(dat$GDP.per.capita..PPP..constant.2021.international...),
-           # scale(dat$Current.health.expenditure.per.capita..PPP..current.international...),
-           # scale(dat$rate.over65),
-           # scale(dat$Estimate.x),                # malaria incidence
-           # scale(dat$Population.density),
-           # scale(dat$Estimated.mortality.from.all.forms.of.tuberculosis.per.100.000.population),
-           # scale(dat$Estimated.number.of.deaths.from.all.forms.of.tuberculosis),
-           # scale(dat$Share.of.population.residing.in.urban.areas..HYDE.estimates.and.UN.projections.))
+X_scale <- cbind(1,                                   # intercept
+           scale(dat$GDP.per.capita..PPP..constant.2021.international...),
+           scale(dat$Current.health.expenditure.per.capita..PPP..current.international...),
+           scale(dat$rate.over65),
+           scale(dat$Estimate.x),                # malaria incidence
+           scale(dat$Population.density),
+           scale(dat$Estimated.mortality.from.all.forms.of.tuberculosis.per.100.000.population),
+           scale(dat$Estimated.number.of.deaths.from.all.forms.of.tuberculosis),
+           scale(dat$Share.of.population.residing.in.urban.areas..HYDE.estimates.and.UN.projections.))
 
 # scale normalizes all the predictor variables so they have mean 0 and sd 1.
 # important: if we want to interpret the results for the prediction later, we need to descale again
 
 # rename columns
-colnames(X) <- c("Intercept","GDP","Health","Pop65","MalariaInc",
-                 "Density","TB_Mort","TB_Deaths","Urban")
+colnames(X_scale) <- colnames(X_raw)
 
 # Mean-impute the single NA in Health
-X[is.na(X[,"Health"]),"Health"] <-
-  mean(X[,"Health"], na.rm = TRUE)
+X_scale[is.na(X_scale[,"Health"]),"Health"] <-
+  mean(X_scale[,"Health"], na.rm = TRUE)
 ```
 
 ## Dataset
 
 - Source: World Bank, World development index
-- Data is normalized
+- Data was normalized for enhanced model performance
+- 38 sub-saharan african countries
+
+## Data preview
+
+Raw data
 
 ```{r}
-print("Raw data")
+#print("Raw data")
 head(round(X_raw[,-1],2))
-print("Normalized data")
-head(round(X[,-1],2))
+```
+
+Normalized data
+
+```{r}
+#print("Normalized data")
+head(round(X_scale[,-1],2))
 ```
 
 ## Handling of missing values
@@ -91,49 +94,55 @@ One missing values for health expenditures gets replaced by mean imputation to a
 ## Multicolliniarity of the predictors
 
 ```{r}
-cor_matrix <- cor(X[,-1])  # Exclude the intercept
+
+cor_matrix <- cor(X_scale[,-1]) # Exclude the intercept
 print(round(cor_matrix, 2))  # Rounded for readability
 ```
 
 -   Nothing over 0.8 $\rightarrow$ looks good
 -   Highest correlation between GDP and Health expenditures (0.69)
 
-## Linear model for malaria death's
-
-CAVE: Interpretability due to scaling limited
+## Linear model (raw) for malaria death's
 
 ```{r}
 library(car)
 
 M_raw <-data.frame(Y = Y_raw,
-                    X_raw
-                )
+                   X_raw
+                   )
 
-lm_model <- lm(Y ~ .-Intercept, M_raw)  # Exclude intercept manually
-summary(lm_model)
+lm_model_raw <- lm(Y ~ . -Intercept, M_raw)  # Exclude intercept manually
+summary(lm_model_raw)
+```
 
+## Linear model (scaled) for malaria death's
 
-M_scale <- data.frame(Y = Y,
-                  X
-                  )
+CAVE: Interpretability due to scaling limited
+
+```{r}
+M_scale <- data.frame(Y = Y_scale,
+                      X_scale
+                      )
 
 lm_model_scale <- lm(Y ~ .-Intercept, M_scale)
 summary(lm_model_scale)
 ```
 
-## Variance Inflation Factor 
-is at max \~2.43 $\rightarrow$ moderate correlation
+## Variance Inflation Coefficient
 
 ```{r}
-vif(lm_model) # nothing over 5, looks good
+vif(lm_model_raw)
 vif(lm_model_scale)
 ```
+
+- VIF is at max. $\approx 2.43 \rightarrow$ moderate correlation
+- Results are actually the same from raw and scaled model
 
 # SSVS model build
 
 ## Preconditions
 
-We simply took those from the original script:
+<!-- We simply took those from the original script: -->
 
 ```{r, echo=T}
 nsave <- 10000
@@ -146,18 +155,18 @@ s0   <- 0.01                  # IG(a,b) prior on σ²
 S0   <- 0.01
 ```
 
-Section can stay the same, because we use same object names
+<!-- Section can stay the same, because we use same object names -->
 
 ```{r, echo=T}
-N <- nrow(X)            # number of countries
-K <- ncol(X)            # number of predictors
+N <- nrow(X_scale)            # number of countries
+K <- ncol(X_scale)            # number of predictors
 
 # Solve creates inverse so we have here (X'X)^-1 (X'Y) = \hat{\beta}.
 # result is Matrix of OLS regression coefficients
-A.OLS <- solve(crossprod(X))%*%crossprod(X,Y)
+A.OLS <- solve(crossprod(X_scale))%*%crossprod(X_scale,Y_scale)
 
 # analogous (Y-X\beta)'(Y-X\beta)
-SSE <- crossprod(Y-X%*%A.OLS) 
+SSE <- crossprod(Y_scale-X_scale%*%A.OLS) 
 
 #Estimate of error variance, N number observations, K number predictors
 SIG.OLS <- SSE/(N-K) 
@@ -197,10 +206,10 @@ for (irep in 1:ntot){
   
   # Constructing posterior variance according to multivariate formula 
   # V.post = (1/\sigma^2 * X'X + V^-1.prior)^-1
-  V.post <- solve(crossprod(X)*1/sigma2.draw+diag(1/diag(V.prior)))
+  V.post <- solve(crossprod(X_scale)*1/sigma2.draw+diag(1/diag(V.prior)))
   
   # Computes the posterior mean using the formula
-  A.post <- V.post%*%(crossprod(X,Y)*1/sigma2.draw)
+  A.post <- V.post%*%(crossprod(X_scale,Y_scale)*1/sigma2.draw)
   
   # Draws sample from multivariate normal distribution
   A.draw <- A.post+t(chol(V.post))%*%rnorm(K)
@@ -223,7 +232,7 @@ for (irep in 1:ntot){
   V.prior <- diag(as.numeric(gamma*tau1+(1-gamma)*tau0))
   
   #Simulate sigma2 from inverse Gamma
-  S.post <- crossprod(Y-X%*%A.draw)/2+S0
+  S.post <- crossprod(Y_scale-X_scale%*%A.draw)/2+S0
   s.post <- S0+N/2
   sigma2.draw <- 1/rgamma(1,s.post,S.post)  
   
@@ -244,15 +253,16 @@ A.mean   <- apply(ALPHA.store,2,mean)
 SIG.mean <- apply(SIGMA.store,2,mean)
 ```
 
-## SSVS Trace-Plot
+## SSVS Trace-Plots
 
 ```{r}
 par(mfrow=c(3,3))  # arrange plots
 
 for (k in 1:K){
   plot(ALPHA.store[,k], type='l',
-       main=colnames(X)[k],
-       xlab="Iterations", ylab="Coefficient")
+       main=colnames(X_scale)[k],
+       xlab="Iterations", ylab="Coefficient", lwd=0.25)
+  abline(h=quantile(ALPHA.store[,k], c(0.05, 0.95)), col="red", lwd=0.5, lty=2)
 }
 ```
 
@@ -260,78 +270,81 @@ for (k in 1:K){
 
 ```{r}
 par(mfrow=c(2,2))
-plot(SIGMA.store, type='l', main="Sigma² Trace", xlab="Iteration", ylab="Variance")
-acf(SIGMA.store, main = "Series")
-hist(SIGMA.store, breaks=50, main="Sigma² Histogram")
+plot(SIGMA.store, type='l', main="Sigma² Trace", xlab="Iteration", ylab="Variance", lwd=0.25)
+abline(h=quantile(SIGMA.store, c(0.05, 0.95)), col="red", lwd=0.5, lty=2)
+acf(SIGMA.store, main = "Autocorrelation in Time-Series")
+hist(SIGMA.store, breaks=50, main="Sigma² Histogram", probability = T)
+lines(density(SIGMA.store), col="red")
 ```
 
-## Combine and display
+## PIP and Posterior means
 
 ```{r}
-importance <- data.frame(Variable = colnames(X),
+importance <- data.frame(Variable = colnames(X_scale),
                          PIP = round(PIP.mean, 3),
                          PostMean = round(A.mean, 3))
 
 print(importance[order(-importance$PIP), ])  # Sort by importance
 ```
 
-## Posterior density
+## Posterior densities
 
 ```{r}
 par(mfrow=c(3,3))
 for (k in 1:K){
-  hist(ALPHA.store[,k], main=colnames(X)[k],
+  hist(ALPHA.store[,k], main=colnames(X_scale)[k],
        xlab="Posterior Draws", breaks=30, col="skyblue", probability = T)
   lines(density(ALPHA.store[,k]), col="red")
 }
 ```
 
-## Summary Alpha
-```{r}
-colnames(ALPHA.store) <- colnames(X)
-summary(ALPHA.store)
-```
+<!-- ## Summary Alpha -->
+<!-- ```{r} -->
+<!-- colnames(ALPHA.store) <- colnames(X) -->
+<!-- summary(ALPHA.store) -->
+<!-- ``` -->
 
-## Summary Sigma
-```{r}
-colnames(SIGMA.store) <- "Sigma"
-summary(SIGMA.store)
-```
+<!-- ## Summary Sigma -->
+<!-- ```{r} -->
+<!-- colnames(SIGMA.store) <- "Sigma" -->
+<!-- summary(SIGMA.store) -->
+<!-- ``` -->
 
-## Summary Gamma
-```{r}
-colnames(Gamma.store) <- colnames(X)
-summary(Gamma.store)
-```
+<!-- ## Summary Gamma -->
+<!-- ```{r} -->
+<!-- colnames(Gamma.store) <- colnames(X) -->
+<!-- summary(Gamma.store) -->
+<!-- ``` -->
 
 ## Posterior Inclusion Probabilities
 ```{r}
 par(mfrow=c(1,1))
-barplot(PIP.mean, names.arg=colnames(X), las=2, col="skyblue",
-        main="", ylim=c(0,1))
+bar_midpoints = barplot(PIP.mean, names.arg=colnames(X_scale), las=2, col="skyblue",
+        main="", ylim=c(0,1.2))
+text(x = bar_midpoints, y = PIP.mean, labels = round(PIP.mean,3), pos = 3, cex=0.7)
 abline(h=0.5, col="red", lty=2)
 ```
 
 # Leave-one-out
-
 
 ```{r, include=FALSE}
 # -----------------  SSVS – Leave-One-Out CV  -----------------
 library(MASS)    # mvrnorm() fallback if chol fails
 
 # -------  scale X (except intercept) & Y  ----------------
-X_scaled <- X_raw
-X_scaled[,-1] <- scale(X_raw[,-1])
-Y_scaled <- scale(Y_raw)
-Y_mean   <- attr(Y_scaled, "scaled:center")
-Y_sd     <- attr(Y_scaled, "scaled:scale")
+# X_scaled <- X_raw
+# X_scaled[,-1] <- scale(X_raw[,-1])
+# Y_scaled <- scale(Y_raw)
+# 
+# Y_mean   <- mean(Y_scale) #attr(Y_scaled, "scaled:center")
+# Y_sd     <- sd(Y_scale) #attr(Y_scaled, "scaled:scale")
 ```
 
 ## Hyperparameters
-```{r}
+```{r, echo=T}
 # ---------- 2. Hyper-parameters & storage -------------------------------
-nsave <- 1000
-nburn <- 1000
+nsave <- 10000
+nburn <- 2000
 ntot  <- nsave + nburn
 
 tau0 <- 0.1          # << relaxed spike
@@ -339,8 +352,8 @@ tau1 <- 10
 s0   <- 0.01
 S0   <- 0.01
 
-N <- nrow(X_scaled)
-K <- ncol(X_scaled)
+N <- nrow(X_scale)
+K <- ncol(X_scale)
 
 pred_scaled <- rep(NA, N)
 pip_mat     <- matrix(NA, N, K)   # PIP per left-out fold
@@ -352,9 +365,9 @@ pip_mat     <- matrix(NA, N, K)   # PIP per left-out fold
 for (i in 1:N) {
   cat("LOO fold", i, "of", N, "\n")
   
-  X_train <- X_scaled[-i, ]
-  Y_train <- Y_scaled[-i]
-  X_test  <- X_scaled[i, , drop = FALSE]
+  X_train <- X_scale[-i, ]
+  Y_train <- Y_scale[-i]
+  X_test  <- X_scale[i, , drop = FALSE]
   
   # ----- OLS starting values ----------
   A.OLS <- solve(crossprod(X_train)) %*% crossprod(X_train, Y_train)
@@ -411,39 +424,208 @@ for (i in 1:N) {
 ## Back transform predictions and evaluate
 ```{r, echo = TRUE}
 # ---------- 4. Back-transform predictions & evaluate  --------------------
-pred_original <- pred_scaled * Y_sd + Y_mean
+pred_original <- pred_scaled * sd(Y_raw) + mean(Y_raw) # Y_sd + Y_mean
 
 loo_results <- data.frame(
   Country   = dat$Entity.x,
-  True      = Y_raw,
-  Predicted = pred_original,
-  Error     = pred_original - Y_raw,
-  MSE = (pred_original - Y_raw)^2
+  True      = round(Y_raw, 2),
+  Predicted = round(pred_original, 2),
+  Error     = round(pred_original - Y_raw, 2),
+  MSE       = round((pred_original - Y_raw)^2,2)
 )
+loo_results2=loo_results
+```
 
+## Error measures
+```{r}
+options(scipen = 9)
 print(head(loo_results, 10))
-cat("RMSE: ", sqrt(mean(loo_results$Error^2)), "\n")
+#cat("RMSE: ", sqrt(mean(loo_results$Error^2)), "\n")
 ```
 
 ## Posterior inclusion probabilities
 ```{r}
 # ---------- 5. Average PIPs across folds --------------------------------
 overall_pip <- colMeans(pip_mat)
+names(overall_pip) = colnames(X_raw)
 print(round(overall_pip, 3))
-barplot(overall_pip, names.arg=colnames(X_scaled), las=2, ylim=c(0,1),
+bar_midpoints <- barplot(overall_pip, las=2, ylim=c(0,1),
         col="skyblue", main="Avg PIP across LOO folds")
+text(x = bar_midpoints, y = overall_pip, labels = round(overall_pip,3), pos = 3, cex=0.7)
+abline(h=0.5, col="red", lty=2)
+
+overall_pip2 = overall_pip
+```
+
+# Leave-one-out without malaria incidence 
+
+```{r, include = F}
+library(MASS)
+X_scale2 = X_scale[,-5]
+head(X_scale2)
+```
+
+
+<!-- ## Hyperparameters -->
+```{r, include=F}
+# ---------- 2. Hyper-parameters & storage -------------------------------
+nsave <- 10000
+nburn <- 2000
+ntot  <- nsave + nburn
+
+tau0 <- 0.1          # << relaxed spike
+tau1 <- 10
+s0   <- 0.01
+S0   <- 0.01
+
+N <- nrow(X_scale2)
+K <- ncol(X_scale2)
+
+pred_scaled <- rep(NA, N)
+pip_mat     <- matrix(NA, N, K)   # PIP per left-out fold
+```
+
+<!-- ## LOO without malaria incidence -->
+
+```{r, include=FALSE}
+# ---------- 3. LOO loop --------------------------------------------------
+for (i in 1:N) {
+  cat("LOO fold", i, "of", N, "\n")
+  
+  X_train <- X_scale2[-i, ]
+  Y_train <- Y_scale[-i]
+  X_test  <- X_scale2[i, , drop = FALSE]
+  
+  # ----- OLS starting values ----------
+  A.OLS <- solve(crossprod(X_train)) %*% crossprod(X_train, Y_train)
+  SSE   <- crossprod(Y_train - X_train %*% A.OLS)
+  SIG.OLS <- SSE / (N-1 - K)
+  
+  gamma <- matrix(1, K, 1)
+  sigma2.draw <- as.numeric(SIG.OLS)
+  V.prior <- diag(as.numeric(gamma * tau1 + (1-gamma) * tau0))
+  
+  # storage for this fold
+  alpha_keep  <- matrix(NA, nsave, K)
+  gamma_keep  <- matrix(NA, nsave, K)
+  sigma_keep  <- numeric(nsave)
+  y_pred_keep <- numeric(nsave)
+# ------------- Gibbs sampler -----------------
+  for (rep in 1:ntot){
+    
+    # 1. β | rest
+    V.post <- solve(crossprod(X_train) / sigma2.draw +
+                      diag(1 / diag(V.prior)))
+    A.post <- V.post %*% (crossprod(X_train, Y_train) / sigma2.draw)
+    A.draw <- A.post + t(chol(V.post)) %*% rnorm(K)
+    
+    # 2. γ | rest
+    for (j in 1:K){
+      p0 <- dnorm(A.draw[j], 0, sqrt(tau0))
+      p1 <- dnorm(A.draw[j], 0, sqrt(tau1))
+      gamma[j] <- rbinom(1, 1, p1/(p0+p1))
+    }
+    V.prior <- diag(as.numeric(gamma * tau1 + (1-gamma) * tau0))
+    
+    # 3. σ² | rest
+    S.post <- crossprod(Y_train - X_train %*% A.draw)/2 + S0
+    s.post <- S0 + (N-1)/2
+    sigma2.draw <- 1 / rgamma(1, s.post, S.post)
+    
+    # ---- store after burn-in
+    if (rep > nburn) {
+      m <- rep - nburn
+      alpha_keep[m, ]  <- A.draw
+      gamma_keep[m, ]  <- gamma
+      sigma_keep[m]    <- sigma2.draw
+      y_pred_keep[m]   <- X_test %*% A.draw                # mean prediction
+    }
+  } # end Gibbs
+
+# Posterior predictive mean for left-out obs
+  pred_scaled[i] <- mean(y_pred_keep)
+  pip_mat[i, ]   <- colMeans(gamma_keep)
+}
+```
+
+<!-- ## Back transform predictions and evaluate -->
+```{r, include=F}
+# ---------- 4. Back-transform predictions & evaluate  --------------------
+pred_original <- pred_scaled * sd(Y_raw) + mean(Y_raw) # Y_sd + Y_mean
+
+loo_results <- data.frame(
+  Country   = dat$Entity.x,
+  True      = round(Y_raw, 2),
+  Predicted = round(pred_original, 2),
+  Error     = round(pred_original - Y_raw, 2),
+  MSE       = round((pred_original - Y_raw)^2,2)
+)
+```
+
+## Error measures without malaria incidence
+```{r}
+options(scipen = 9)
+print(head(loo_results, 10))
+#cat("RMSE: ", sqrt(mean(loo_results$Error^2)), "\n")
+```
+
+## Posterior inclusion probabilities without malaria incidence
+```{r}
+# ---------- 5. Average PIPs across folds --------------------------------
+overall_pip <- colMeans(pip_mat)
+names(overall_pip) = colnames(X_scale2)
+# print(round(overall_pip, 3))
+
+par(mfrow=c(1,2))
+
+bar_midpoints1 <- barplot(overall_pip2, las=2, ylim=c(0,1),
+        col="skyblue", main="With malaria incidence")
+text(x = bar_midpoints1, y = overall_pip2, labels = round(overall_pip2,3), pos = 3, cex=0.7)
+abline(h=0.5, col="red", lty=2)
+
+
+bar_midpoints2 <- barplot(overall_pip, las=2, ylim=c(0,1),
+        col="skyblue", main="Without malaria incidence")
+text(x = bar_midpoints2, y = overall_pip, labels = round(overall_pip,3), pos = 3, cex=0.7)
 abline(h=0.5, col="red", lty=2)
 ```
 
+## Predicted vs True Malaria Deaths
 
-```{r, eval=FALSE}
-# ---------- 6. Save results ---------------------------------------------
-dir.create("results", showWarnings = FALSE)
-write.csv(loo_results, "results/loo_predictions.csv", row.names = FALSE)
+```{r}
+par(mfrow=c(1,2))
+
+plot(Predicted~True, data=loo_results2,
+     asp=0, 
+     ylim=c(-20, 170),
+     xlim=c(-20, 170),
+     frame.plot=F,
+     axes=F,
+     main="With malaria incidence"
+     )
+abline(a=0, b=1, col="red", lty=2)
+abline(h=0, lwd=0.8, lty=1)
+abline(v=0, lwd=0.8, lty=1)
+
+plot(Predicted~True, data=loo_results,
+     asp=0, 
+     ylim=c(-20, 170),
+     xlim=c(-20, 170),
+     frame.plot=F,
+     axes=F,
+     main="Without malaria incidence"
+     )
+abline(a=0, b=1, col="red", lty=2)
+abline(h=0, lwd=0.8, lty=1)
+abline(v=0, lwd=0.8, lty=1)
 ```
 
+## Conclusion
+- Malaria-Incidence is the best predictor for malaria deaths
+- If we don't measure the incidence, we hardly can predict the deaths
+- Or with the words of WHO Director General Tedros Adhanom Ghebreyesus during COVID - "We have a simple message to all countries - test, test, test," 
 
 
-
+# Thanks for your attention
 
 
